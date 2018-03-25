@@ -44,6 +44,8 @@ x = tf.placeholder(tf.float32, [None, 10000])
 W = tf.Variable(tf.zeros([10000,3]))
 y_ = tf.placeholder("float", [None,3])
 sess = tf.InteractiveSession()
+saver = tf.train.Saver()
+
 
 def weight_variable(shape):
 	initial = tf.truncated_normal(shape, stddev=0.1)
@@ -89,7 +91,7 @@ train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 sess.run(tf.global_variables_initializer())
-
+saver = tf.train.Saver()
 
 
 def next_batch(num, data1, data2):
@@ -111,7 +113,7 @@ p_y = [0 for i in range(10000)]
 
 
 with open("single_result.txt", "a") as log:
-	for i in range(10000):
+	for i in range(1000):
 
 		dataset = next_batch(50, data_train, label_train)
 		if i%1 == 0:
@@ -126,3 +128,5 @@ with open("single_result.txt", "a") as log:
 
 
 
+save_path = saver.save(sess, "D:/HandGestureRecognition/Model/model.ckpt")
+print("Model saved in path: %s" % save_path)
