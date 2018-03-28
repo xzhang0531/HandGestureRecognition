@@ -1,4 +1,10 @@
+import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.common.serialization.IntegerSerializer;
+import org.apache.kafka.common.serialization.StringSerializer;
+import java.util.Arrays;
 import KinectPV2.*;
+import java.util.Properties;
+
 
 KinectPV2 kinect;
 PrintWriter output;
@@ -18,6 +24,7 @@ void setup() {
   kinect.init();
   output = createWriter("rawData.txt");
   handpos = createWriter("handPosition.txt");
+
 }
 
 
@@ -99,10 +106,22 @@ void writeCloud(KJoint[] joints3d, KJoint[] joints2d,char k)
   handpos.flush();
   //save raw data to file
   int [] rawData = kinect.getRawDepthData();
+  String strArray[] = new String[rawData.length];
+  for (int i = 0; i < rawData.length; i++){
+    strArray[i] = String.valueOf(rawData[i]);
+  }
+  String data = Arrays.toString(strArray);
+  System.out.println(data.length());
   for(int i=0;i<rawData.length;i++)
   {
     output.print(rawData[i]);
     output.print(", ");
+  }
+  try{
+    runProducer(data);
+    //System.out.println(data);
+  }catch(Exception e){
+    System.out.println(e);
   }
   output.println();
   output.flush();
@@ -120,3 +139,24 @@ void drawJoint(KJoint[] joints, int jointType, color tar) {
   ellipse(0, 0, 25, 25);
   popMatrix();
 }
+
+private final static String TOPIC = "kafkain";
+private final static String BOOTSTRAP_SERVERS = "18.217.86.48:9092";
+private static Producer<String, String> createProducer() {
+    Properties props = new Properties();
+    props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+    props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,StringSerializer.class.getName());
+    props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,StringSerializer.class.getName());
+    props.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, "9999999");
+    return new KafkaProducer<String, String>(props);
+}
+
+static void runProducer(String data) throws Exception {
+  Producer<String, String> producer = createProducer();
+  
+  String message = "{\"name\": \"" + data + "\"}";
+  ProducerRecord<String, String> rec = new ProducerRecord<String, String>(TOPIC,"001",message);
+  producer.send(rec).get();
+}
+
+    
