@@ -4,14 +4,14 @@ output: prediction
 
 tasks:
   dataPreprocess:
-    run: HGR-preprocess
+    run: hgr-preprocess
     inputs:
       default:
         rawData: "{$.Invocation.Inputs.default.rawData}"
         handLocation: "{$.Invocation.Inputs.default.handLocation}"
 
   prediction:
-    run: HGR-predict
+    run: hgr-predict
     inputs:
       default:
         data: "{$.Tasks.dataPreprocess.Output.data}"
