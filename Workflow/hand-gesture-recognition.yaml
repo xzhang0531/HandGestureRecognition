@@ -1,0 +1,19 @@
+apiVersion: 1
+description: Recognize hand gesture using raw data from kinect
+output: prediction
+
+tasks:
+  dataPreprocess:
+    run: HGR-preprocess
+    inputs:
+      default:
+        rawData: "{$.Invocation.Inputs.default.rawData}"
+        handLocation: "{$.Invocation.Inputs.default.handLocation}"
+
+  prediction:
+    run: HGR-predict
+    inputs:
+      default:
+        data: "{$.Tasks.dataPreprocess.Output.data}"
+    requires:
+    - dataPreprocess
