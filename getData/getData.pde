@@ -140,7 +140,7 @@ void drawJoint(KJoint[] joints, int jointType, color tar) {
   popMatrix();
 }
 
-private final static String TOPIC = "kafkain";
+private final static String TOPIC = "helloin2";
 private final static String BOOTSTRAP_SERVERS = "18.217.86.48:9092";
 private static Producer<String, String> createProducer() {
     Properties props = new Properties();
@@ -154,7 +154,7 @@ private static Producer<String, String> createProducer() {
 static void runProducer(String data) throws Exception {
   Producer<String, String> producer = createProducer();
   
-  String message = "{\"name\": \"" + data + "\"}";
+  String message = "{\"name\": \"" + "sdfgsdf" + "\"}";
   ProducerRecord<String, String> rec = new ProducerRecord<String, String>(TOPIC,"001",message);
   producer.send(rec).get();
 }
