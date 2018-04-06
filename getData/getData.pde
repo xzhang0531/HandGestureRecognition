@@ -104,6 +104,8 @@ void writeCloud(KJoint[] joints3d, KJoint[] joints2d,char k)
   handpos.print(joints3d[KinectPV2.JointType_HandLeft].getZ());
   handpos.println();
   handpos.flush();
+  String handLocation = joints2d[KinectPV2.JointType_HandLeft].getX() + ", " + joints2d[KinectPV2.JointType_HandLeft].getY() + ", " + joints3d[KinectPV2.JointType_HandLeft].getZ();
+
   //save raw data to file
   int [] rawData = kinect.getRawDepthData();
   String strArray[] = new String[rawData.length];
@@ -111,15 +113,15 @@ void writeCloud(KJoint[] joints3d, KJoint[] joints2d,char k)
     strArray[i] = String.valueOf(rawData[i]);
   }
   String data = Arrays.toString(strArray);
-  System.out.println(data.length());
+  //System.out.println(data.length());
   for(int i=0;i<rawData.length;i++)
   {
     output.print(rawData[i]);
     output.print(", ");
   }
   try{
-    runProducer(data);
-    //System.out.println(data);
+    runProducer(data, handLocation);
+    //System.out.println(handLocation);
   }catch(Exception e){
     System.out.println(e);
   }
@@ -140,7 +142,7 @@ void drawJoint(KJoint[] joints, int jointType, color tar) {
   popMatrix();
 }
 
-private final static String TOPIC = "helloin2";
+private final static String TOPIC = "largedatain";
 private final static String BOOTSTRAP_SERVERS = "18.217.86.48:9092";
 private static Producer<String, String> createProducer() {
     Properties props = new Properties();
@@ -151,10 +153,11 @@ private static Producer<String, String> createProducer() {
     return new KafkaProducer<String, String>(props);
 }
 
-static void runProducer(String data) throws Exception {
+static void runProducer(String data, String handLocation) throws Exception {
   Producer<String, String> producer = createProducer();
   
-  String message = "{\"name\": \"" + "sdfgsdf" + "\"}";
+  String message = "{\"rawData\": \"" + data + "\", \"handLocation\": \"" + handLocation + "\"}";
+  //System.out.println(message);
   ProducerRecord<String, String> rec = new ProducerRecord<String, String>(TOPIC,"001",message);
   producer.send(rec).get();
 }

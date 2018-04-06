@@ -14,7 +14,11 @@ def main():
 	## calculate comparative hand size
 
 	pixels = rawData.split(", ")
+	pixels[0] = pixels[0][1:]
+	pixels[-1] = pixels[-1][:-1]
+
 	handPos = handLocation.split(", ")
+	
 
 	x = int(float(handPos[0]))
 	y = int(float(handPos[1]))
