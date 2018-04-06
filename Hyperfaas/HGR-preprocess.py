@@ -70,7 +70,9 @@ def main():
 
 	result = result[:-2]
 
-	return {"data": result}
+	#return "function works"
+
+	return "{\"data\": \"" + result + "\"}"
 
 
 
