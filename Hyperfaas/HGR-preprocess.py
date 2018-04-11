@@ -1,12 +1,11 @@
-from flask import request
+from flask import request, current_app
 
 def main():
-	rawData = ""
-	if request.data:
-		rawData = request.get_json().get("rawData")
-		handLocation = request.get_json().get("handLocation")
-	else:
-		return "Error: No data in the request!"
+
+	payload = request.get_json()
+	rawData = payload["rawData"]
+	handLocation = payload["handLocation"]
+
 
 	STANDARD_Z = 1.1072689
 	STANDARD_SIZE = 40

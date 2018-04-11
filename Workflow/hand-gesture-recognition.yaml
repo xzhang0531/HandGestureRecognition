@@ -5,15 +5,10 @@ output: prediction
 tasks:
   dataPreprocess:
     run: hgr-preprocess
-    inputs:
-      default:
-        rawData: "{$.Invocation.Inputs.default.rawData}"
-        handLocation: "{$.Invocation.Inputs.default.handLocation}"
+    inputs: "{$.Invocation.Inputs.default}"
 
   prediction:
     run: hgr-predict
-    inputs:
-      default:
-        data: "{$.Tasks.dataPreprocess.Output.data}"
+    inputs: "{$.Tasks.dataPreprocess.Output}"
     requires:
     - dataPreprocess
