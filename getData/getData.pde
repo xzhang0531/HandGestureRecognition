@@ -1,10 +1,13 @@
 import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.serialization.IntegerSerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.common.serialization.IntegerDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import java.util.Arrays;
 import KinectPV2.*;
 import java.util.Properties;
-
+import java.util.Collections;
 
 KinectPV2 kinect;
 PrintWriter output;
@@ -121,6 +124,7 @@ void writeCloud(KJoint[] joints3d, KJoint[] joints2d,char k)
   }
   try{
     runProducer(data, handLocation);
+    runConsumer();
     //System.out.println(handLocation);
   }catch(Exception e){
     System.out.println(e);
@@ -142,7 +146,9 @@ void drawJoint(KJoint[] joints, int jointType, color tar) {
   popMatrix();
 }
 
-private final static String TOPIC = "largedatain";
+private final static String TOPIC = "hgr-preprocess-in";
+private final static String TOPIC2 = "hgr-preprocess-out";
+private final static String TOPIC3 = "hgr-predict-in";
 private final static String BOOTSTRAP_SERVERS = "18.217.86.48:9092";
 private static Producer<String, String> createProducer() {
     Properties props = new Properties();
@@ -151,6 +157,17 @@ private static Producer<String, String> createProducer() {
     props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,StringSerializer.class.getName());
     props.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, "9999999");
     return new KafkaProducer<String, String>(props);
+}
+private static Consumer<String, String> createConsumer() {
+    Properties props = new Properties();
+    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+    props.put(ConsumerConfig.GROUP_ID_CONFIG, "xiangyuzhang");
+    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
+    props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, "9999999");
+    final Consumer<String, String> consumer = new KafkaConsumer<String, String>(props);
+    consumer.subscribe(Collections.singletonList(TOPIC2));
+    return consumer;
 }
 
 static void runProducer(String data, String handLocation) throws Exception {
@@ -162,4 +179,31 @@ static void runProducer(String data, String handLocation) throws Exception {
   producer.send(rec).get();
 }
 
+static void runConsumer() throws Exception {
+  Consumer<String, String> consumer = createConsumer();
+  final int giveUp = 100;   int noRecordsCount = 0;
+        while (true) {
+            final ConsumerRecords<String, String> consumerRecords = consumer.poll(10);
+
+            if (consumerRecords.count()==0) {
+                noRecordsCount++;
+                if (noRecordsCount > giveUp) break;
+                else continue;
+            }
+
+            for (ConsumerRecord<String, String> record : consumerRecords) {
+                  Producer<String, String> producer = createProducer();
+  
+                  String message = record.value();
+                  System.out.println(message);
+                  ProducerRecord<String, String> rec = new ProducerRecord<String, String>(TOPIC3,"001",message);
+                  producer.send(rec).get();
+            }
+
+            consumer.commitAsync();
+        }
+        consumer.close();
+        System.out.println("DONE");
+  
+}
     
