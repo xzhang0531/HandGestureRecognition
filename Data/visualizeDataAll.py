@@ -1,5 +1,5 @@
 from PIL import Image
-file = open("resizedData_1.txt", "r")
+file = open("resizedData_a.txt", "r")
 data = file.read().split(", ")
 
 

@@ -1,6 +1,6 @@
-File = open("rawData_3.txt","r")
-File2 = open("handPosition_3.txt","r")
-File3= open("resizedData_3.txt","w+")
+File = open("rawData_d.txt","r")
+File2 = open("handPosition_d.txt","r")
+File3= open("resizedData_d.txt","w+")
 
 STANDARD_Z = 1.1072689
 STANDARD_SIZE = 40

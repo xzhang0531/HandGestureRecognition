@@ -25,8 +25,8 @@ void setup() {
   kinect.enableSkeleton3DMap(true);
   kinect.enableDepthMaskImg(true);
   kinect.init();
-  output = createWriter("rawData.txt");
-  handpos = createWriter("handPosition.txt");
+  output = createWriter("rawData_y.txt");
+  handpos = createWriter("handPosition_y.txt");
 
 }
 
@@ -124,7 +124,7 @@ void writeCloud(KJoint[] joints3d, KJoint[] joints2d,char k)
   }
   try{
     runProducer(data, handLocation);
-    runConsumer();
+    //runConsumer();
     //System.out.println(handLocation);
   }catch(Exception e){
     System.out.println(e);
@@ -146,7 +146,7 @@ void drawJoint(KJoint[] joints, int jointType, color tar) {
   popMatrix();
 }
 
-private final static String TOPIC = "hgr-preprocess-in";
+private final static String TOPIC = "hgr-wf-in";
 private final static String TOPIC2 = "hgr-preprocess-out";
 private final static String TOPIC3 = "hgr-predict-in";
 private final static String BOOTSTRAP_SERVERS = "18.217.86.48:9092";
@@ -182,28 +182,31 @@ static void runProducer(String data, String handLocation) throws Exception {
 static void runConsumer() throws Exception {
   Consumer<String, String> consumer = createConsumer();
   final int giveUp = 100;   int noRecordsCount = 0;
-        while (true) {
-            final ConsumerRecords<String, String> consumerRecords = consumer.poll(10);
+  while (true) {
+      //System.out.println(noRecordsCount);
+      final ConsumerRecords<String, String> consumerRecords = consumer.poll(20);
 
-            if (consumerRecords.count()==0) {
-                noRecordsCount++;
-                if (noRecordsCount > giveUp) break;
-                else continue;
-            }
+      if (consumerRecords.count()==0) {
+          noRecordsCount++;
+          if (noRecordsCount > giveUp) break;
+          else continue;
+      }
 
-            for (ConsumerRecord<String, String> record : consumerRecords) {
-                  Producer<String, String> producer = createProducer();
-  
-                  String message = record.value();
-                  System.out.println(message);
-                  ProducerRecord<String, String> rec = new ProducerRecord<String, String>(TOPIC3,"001",message);
-                  producer.send(rec).get();
-            }
+      for (ConsumerRecord<String, String> record : consumerRecords) {
+            Producer<String, String> producer = createProducer();
 
-            consumer.commitAsync();
-        }
-        consumer.close();
-        System.out.println("DONE");
+            String message = record.value();
+            System.out.println(message);
+            ProducerRecord<String, String> rec = new ProducerRecord<String, String>(TOPIC3,"001",message);
+            producer.send(rec);
+            break;
+      }
+
+      consumer.commitAsync();
+
+  }
+  consumer.close();
+  System.out.println("DONE");
   
 }
     
