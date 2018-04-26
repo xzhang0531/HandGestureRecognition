@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, current_app
 import tensorflow as tf
 import numpy as np
 from io import StringIO
@@ -6,8 +6,8 @@ from io import StringIO
 
 def main():
 	
-
-	data = request.get_json().get("data")
+	payload = request.get_json(force=True)
+	data = payload["data"]
 
 	data = np.fromstring(data, dtype=float, sep = ", ")
 	tf.reset_default_graph()
