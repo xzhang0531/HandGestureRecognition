@@ -158,17 +158,17 @@ private static Producer<String, String> createProducer() {
     props.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, "9999999");
     return new KafkaProducer<String, String>(props);
 }
-private static Consumer<String, String> createConsumer() {
-    Properties props = new Properties();
-    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
-    props.put(ConsumerConfig.GROUP_ID_CONFIG, "xiangyuzhang");
-    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
-    props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, "9999999");
-    final Consumer<String, String> consumer = new KafkaConsumer<String, String>(props);
-    consumer.subscribe(Collections.singletonList(TOPIC2));
-    return consumer;
-}
+//private static Consumer<String, String> createConsumer() {
+//    Properties props = new Properties();
+//    props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
+//    props.put(ConsumerConfig.GROUP_ID_CONFIG, "xiangyuzhang");
+//    props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+//    props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,StringDeserializer.class.getName());
+//    props.put(ConsumerConfig.MAX_PARTITION_FETCH_BYTES_CONFIG, "9999999");
+//    final Consumer<String, String> consumer = new KafkaConsumer<String, String>(props);
+//    consumer.subscribe(Collections.singletonList(TOPIC2));
+//    return consumer;
+//}
 
 static void runProducer(String data, String handLocation) throws Exception {
   Producer<String, String> producer = createProducer();
@@ -179,34 +179,34 @@ static void runProducer(String data, String handLocation) throws Exception {
   producer.send(rec).get();
 }
 
-static void runConsumer() throws Exception {
-  Consumer<String, String> consumer = createConsumer();
-  final int giveUp = 100;   int noRecordsCount = 0;
-  while (true) {
-      //System.out.println(noRecordsCount);
-      final ConsumerRecords<String, String> consumerRecords = consumer.poll(20);
+//static void runConsumer() throws Exception {
+//  Consumer<String, String> consumer = createConsumer();
+//  final int giveUp = 100;   int noRecordsCount = 0;
+//  while (true) {
+//      //System.out.println(noRecordsCount);
+//      final ConsumerRecords<String, String> consumerRecords = consumer.poll(20);
 
-      if (consumerRecords.count()==0) {
-          noRecordsCount++;
-          if (noRecordsCount > giveUp) break;
-          else continue;
-      }
+//      if (consumerRecords.count()==0) {
+//          noRecordsCount++;
+//          if (noRecordsCount > giveUp) break;
+//          else continue;
+//      }
 
-      for (ConsumerRecord<String, String> record : consumerRecords) {
-            Producer<String, String> producer = createProducer();
+//      for (ConsumerRecord<String, String> record : consumerRecords) {
+//            Producer<String, String> producer = createProducer();
 
-            String message = record.value();
-            System.out.println(message);
-            ProducerRecord<String, String> rec = new ProducerRecord<String, String>(TOPIC3,"001",message);
-            producer.send(rec);
-            break;
-      }
+//            String message = record.value();
+//            System.out.println(message);
+//            ProducerRecord<String, String> rec = new ProducerRecord<String, String>(TOPIC3,"001",message);
+//            producer.send(rec);
+//            break;
+//      }
 
-      consumer.commitAsync();
+//      consumer.commitAsync();
 
-  }
-  consumer.close();
-  System.out.println("DONE");
+//  }
+//  consumer.close();
+//  System.out.println("DONE");
   
-}
+//}
     
