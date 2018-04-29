@@ -146,9 +146,9 @@ void drawJoint(KJoint[] joints, int jointType, color tar) {
   popMatrix();
 }
 
-private final static String TOPIC = "hgr-wf-in";
-private final static String TOPIC2 = "hgr-preprocess-out";
-private final static String TOPIC3 = "hgr-predict-in";
+private final static String TOPIC = "hgr-wf-asl-in";
+//private final static String TOPIC2 = "hgr-preprocess-out";
+//private final static String TOPIC3 = "hgr-predict-in";
 private final static String BOOTSTRAP_SERVERS = "18.217.86.48:9092";
 private static Producer<String, String> createProducer() {
     Properties props = new Properties();
